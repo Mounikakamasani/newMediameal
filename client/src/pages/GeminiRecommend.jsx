@@ -92,12 +92,19 @@ export default function GeminiRecommend() {
   // Load user details from localStorage if available
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('medimeal_user'));
+    console.log('Loading user data on mount:', user);
+    
     if (user && user.email) {
       axios
         .get(`${import.meta.env.VITE_BACKEND_URL}/api/user-input?email=${encodeURIComponent(user.email)}`)
         .then((res) => {
           if (res.data.input) setForm((f) => ({ ...f, ...res.data.input }));
+        })
+        .catch((error) => {
+          console.error('Error loading user input:', error.response?.data || error.message);
         });
+    } else {
+      console.warn('No user found in localStorage or missing email');
     }
   }, []);
 
@@ -138,14 +145,27 @@ export default function GeminiRecommend() {
       const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/gemini-recommend`, form);
       setResult(res.data);
       const user = JSON.parse(localStorage.getItem('medimeal_user'));
+      
+      // Debug: Check if user exists and has email
+      console.log('User from localStorage:', user);
+      
       if (user && user.email) {
-        await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/user-input`, {
-          email: user.email,
-          input: form,
-          recommendations: res.data,
-        });
+        try {
+          await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/user-input`, {
+            email: user.email,
+            input: form,
+            recommendations: res.data,
+          });
+          console.log('User input saved successfully');
+        } catch (saveError) {
+          console.error('Error saving user input:', saveError.response?.data || saveError.message);
+          // Don't fail the whole process if saving fails
+        }
+      } else {
+        console.warn('User not logged in or email missing - skipping save');
       }
-    } catch {
+    } catch (error) {
+      console.error('Error getting recommendations:', error.response?.data || error.message);
       setResult({ error: 'Failed to get recommendations.' });
     }
     setLoading(false);
