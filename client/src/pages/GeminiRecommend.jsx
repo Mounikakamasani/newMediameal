@@ -454,54 +454,86 @@ export default function GeminiRecommend() {
         </>
       )}
       {result && (
-        <div className="recommend-results">
-          <div className="meal-tabs" ref={mealTabsRef}>
-            {['Breakfast', 'Lunch', 'Dinner'].map((meal, idx) => (
-              <button
-                key={meal}
-                ref={(el) => (mealBtnRefs.current[idx] = el)}
-                className={`meal-tab${selectedMeal === meal ? ' selected' : ''}`}
-                onClick={() => setSelectedMeal(meal)}
-              >
-                {meal}
-              </button>
-            ))}
+        <div className="recommend-results" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '40vh' }}>
+          <div className="meal-tabs" ref={mealTabsRef} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: '1.5rem', marginBottom: '2rem', position: 'relative', width: 'auto' }}>
+            {['Breakfast', 'Lunch', 'Dinner'].map((meal, idx) => {
+              const icons = { Breakfast: '☀️', Lunch: '🌞', Dinner: '🌙' };
+              return (
+                <button
+                  key={meal}
+                  ref={(el) => (mealBtnRefs.current[idx] = el)}
+                  className={`meal-tab${selectedMeal === meal ? ' selected' : ''}`}
+                  onClick={() => setSelectedMeal(meal)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                    fontSize: '1.15rem',
+                    fontWeight: 700,
+                    letterSpacing: '0.5px',
+                    padding: '0.7rem 2.2rem',
+                    borderRadius: '2rem',
+                    border: selectedMeal === meal ? '2.5px solid #0a2342' : '2px solid #0a2342',
+                    background: selectedMeal === meal ? 'linear-gradient(90deg, #0a2342 60%, #274472 100%)' : '#fff',
+                    color: selectedMeal === meal ? '#fff' : '#0a2342',
+                    boxShadow: selectedMeal === meal ? '0 4px 16px rgba(26,35,66,0.13)' : '0 2px 8px #0a234211',
+                    cursor: 'pointer',
+                    outline: 'none',
+                    transition: 'background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.18s, border 0.2s',
+                  }}
+                  aria-pressed={selectedMeal === meal}
+                >
+                  <span style={{ fontSize: '1.35rem', marginRight: 6 }}>{icons[meal]}</span>
+                  {meal}
+                </button>
+              );
+            })}
             {/* Animated indicator */}
             <div className="meal-tab-indicator" style={indicatorStyle} />
           </div>
           {result[selectedMeal?.toLowerCase()] ? (
-            <div className={`meal-output fade-in`} style={{ maxWidth: 500, margin: '0 auto', marginTop: 12 }}>
-              <h3 style={{ color: '#0a2342', fontWeight: 700, fontSize: '1.3rem', marginBottom: 10 }}>{selectedMeal}</h3>
-              <h4 style={{ color: '#1a237e', fontWeight: 600, fontSize: '1.1rem', marginBottom: 6 }}>Recommended:</h4>
-              <ul>
-                {result[selectedMeal.toLowerCase()]?.recommended?.map((item, idx) => (
-                  <li key={idx}>
-                    {item.food} - {item.quantity}
-                  </li>
-                ))}
-              </ul>
-              <h4 style={{ color: '#b71c1c', fontWeight: 600, fontSize: '1.1rem', marginBottom: 6 }}>Not Recommended:</h4>
-              <ul>
-                {result[selectedMeal.toLowerCase()]?.not_recommended?.map((food, idx) => (
-                  <li
-                    key={idx}
-                    style={
-                      food.toLowerCase().includes(highlightedFood)
-                        ? { background: '#ffebee', animation: 'shake 0.4s' }
-                        : {}
-                    }
-                  >
-                    {food}
-                  </li>
-                ))}
-              </ul>
+            <div className="meal-output-card fade-in" style={{ maxWidth: 540, margin: '0 auto', marginTop: 18, background: '#fff', borderRadius: 18, boxShadow: '0 2px 18px #0a234211', padding: '2rem 2rem 1.5rem 2rem', position: 'relative' }}>
+              <h3 style={{ color: '#0a2342', fontWeight: 700, fontSize: '1.5rem', marginBottom: 18, textAlign: 'center', letterSpacing: '1px' }}>{selectedMeal}</h3>
+              <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap', justifyContent: 'space-between' }}>
+                <div style={{ flex: 1, minWidth: 220 }}>
+                  <h4 style={{ color: '#1a7e23', fontWeight: 700, fontSize: '1.1rem', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ background: '#e8f5e9', color: '#1a7e23', borderRadius: 8, padding: '2px 10px', fontSize: '0.98rem', fontWeight: 700 }}>Recommended</span>
+                  </h4>
+                  <ul className="gemini-food-list">
+                    {result[selectedMeal.toLowerCase()]?.recommended?.map((item, idx) => (
+                      <li key={idx} className="gemini-food-item" style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10, background: '#f8fafc', borderRadius: 10, padding: '0.7rem 1rem', boxShadow: '0 1px 4px #0a234211' }}>
+                        <span style={{ fontWeight: 600, color: '#0a2342', fontSize: '1.08rem', flex: 1 }}>{item.food}</span>
+                        <span style={{ color: '#607d8b', fontSize: '0.98rem', fontWeight: 500, marginRight: 10 }}>{item.quantity}</span>
+                        <span style={{ background: '#e8f5e9', color: '#1a7e23', borderRadius: 6, padding: '2px 8px', fontSize: '1.1rem', fontWeight: 700 }}>✔</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div style={{ flex: 1, minWidth: 220 }}>
+                  <h4 style={{ color: '#b71c1c', fontWeight: 700, fontSize: '1.1rem', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ background: '#ffebee', color: '#b71c1c', borderRadius: 8, padding: '2px 10px', fontSize: '0.98rem', fontWeight: 700 }}>Not Recommended</span>
+                  </h4>
+                  <ul className="gemini-food-list">
+                    {result[selectedMeal.toLowerCase()]?.not_recommended?.map((food, idx) => (
+                      <li
+                        key={idx}
+                        className="gemini-food-item"
+                        style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10, background: highlightedFood && food.toLowerCase().includes(highlightedFood) ? '#ffebee' : '#f8fafc', borderRadius: 10, padding: '0.7rem 1rem', boxShadow: '0 1px 4px #0a234211', animation: highlightedFood && food.toLowerCase().includes(highlightedFood) ? 'shake 0.4s' : undefined }}
+                      >
+                        <span style={{ fontWeight: 600, color: '#b71c1c', fontSize: '1.08rem', flex: 1 }}>{food}</span>
+                        <span style={{ background: '#ffebee', color: '#b71c1c', borderRadius: 6, padding: '2px 8px', fontSize: '1.1rem', fontWeight: 700 }}>✖</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
             </div>
           ) : (
             <div style={{ textAlign: 'center', color: '#b71c1c', marginTop: 32, fontWeight: 600 }}>
               {/* No recommendations message intentionally left blank */}
             </div>
           )}
-          <div style={{ margin: '1.5rem auto 0 auto', maxWidth: 400, textAlign: 'center' }}>
+          <div style={{ margin: '2.2rem auto 0 auto', maxWidth: 420, textAlign: 'center' }}>
             <form
               onSubmit={async (e) => {
                 e.preventDefault();
@@ -530,10 +562,10 @@ export default function GeminiRecommend() {
                 }
                 setFoodCheckLoading(false);
               }}
-              style={{ display: 'flex', gap: 8, justifyContent: 'center', alignItems: 'center', position: 'relative' }}
+              style={{ display: 'flex', gap: 10, justifyContent: 'center', alignItems: 'center', position: 'relative', background: '#fff', borderRadius: 12, boxShadow: '0 2px 8px #0a234211', padding: '1rem 1.2rem', marginTop: 18 }}
               autoComplete="off"
             >
-              <div style={{ position: 'relative', width: 200 }}>
+              <div style={{ position: 'relative', width: 220 }}>
                 <input
                   type="text"
                   value={foodQuery}
@@ -549,9 +581,10 @@ export default function GeminiRecommend() {
                     setFoodSuggestions(allFoods.filter((f) => f.toLowerCase().includes(query)).slice(0, 5));
                   }}
                   placeholder="Ask about a specific food..."
-                  style={{ padding: '0.6rem 1rem', borderRadius: 8, border: '1.5px solid #b0bec5', fontSize: '1rem', width: '100%' }}
+                  style={{ padding: '0.7rem 1.1rem 0.7rem 2.2rem', borderRadius: 8, border: '1.5px solid #b0bec5', fontSize: '1rem', width: '100%', background: '#f8fafc', boxShadow: '0 1px 4px #0a234211' }}
                   autoComplete="off"
                 />
+                <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#b0bec5', fontSize: '1.2rem' }}>🔍</span>
                 {foodSuggestions.length > 0 && (
                   <ul
                     style={{
@@ -588,14 +621,16 @@ export default function GeminiRecommend() {
               <button
                 type="submit"
                 style={{
-                  padding: '0.6rem 1.3rem',
+                  padding: '0.7rem 1.5rem',
                   borderRadius: 8,
                   background: '#1a237e',
                   color: '#fff',
                   border: 'none',
-                  fontWeight: 600,
+                  fontWeight: 700,
                   fontSize: '1rem',
                   cursor: 'pointer',
+                  boxShadow: '0 1px 4px #0a234211',
+                  transition: 'background 0.2s, transform 0.18s',
                 }}
                 disabled={foodCheckLoading}
               >
@@ -626,7 +661,7 @@ export default function GeminiRecommend() {
               <div
                 style={{
                   marginTop: 10,
-                  fontWeight: 600,
+                  fontWeight: 700,
                   animation: 'fade-in 0.5s',
                   display: 'flex',
                   alignItems: 'center',
@@ -634,7 +669,6 @@ export default function GeminiRecommend() {
                   gap: 8,
                 }}
               >
-                {/* Just show text, colored by warning type */}
                 <span
                   style={{
                     color:
@@ -715,3 +749,4 @@ function FoodItem({ food, icon, type }) {
     </li>
   );
 }
+
