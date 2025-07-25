@@ -263,13 +263,41 @@ app.post('/api/gemini-food-check', async (req, res) => {
 
 function recommendationsToText(recommendations) {
   if (!recommendations || typeof recommendations !== 'object') return '';
-  const rec = recommendations.recommended && recommendations.recommended.length
-    ? `Recommended: ${recommendations.recommended.join(', ')}`
-    : '';
-  const notRec = recommendations.not_recommended && recommendations.not_recommended.length
-    ? `Not Recommended: ${recommendations.not_recommended.join(', ')}`
-    : '';
-  return [rec, notRec].filter(Boolean).join('\n');
+  
+  let result = '';
+  
+  // Handle the new nested structure with breakfast, lunch, dinner
+  if (recommendations.breakfast || recommendations.lunch || recommendations.dinner) {
+    ['breakfast', 'lunch', 'dinner'].forEach(meal => {
+      const mealData = recommendations[meal];
+      if (mealData) {
+        result += `${meal.charAt(0).toUpperCase() + meal.slice(1)}:\n`;
+        
+        if (mealData.recommended && mealData.recommended.length) {
+          const recItems = mealData.recommended.map(item => 
+            typeof item === 'object' ? `${item.food} - ${item.quantity}` : item
+          );
+          result += `  Recommended: ${recItems.join(', ')}\n`;
+        }
+        
+        if (mealData.not_recommended && mealData.not_recommended.length) {
+          result += `  Not Recommended: ${mealData.not_recommended.join(', ')}\n`;
+        }
+        result += '\n';
+      }
+    });
+  } else {
+    // Fallback for old format
+    const rec = recommendations.recommended && recommendations.recommended.length
+      ? `Recommended: ${recommendations.recommended.join(', ')}`
+      : '';
+    const notRec = recommendations.not_recommended && recommendations.not_recommended.length
+      ? `Not Recommended: ${recommendations.not_recommended.join(', ')}`
+      : '';
+    result = [rec, notRec].filter(Boolean).join('\n');
+  }
+  
+  return result.trim();
 }
 
 // Save user input and recommendations
