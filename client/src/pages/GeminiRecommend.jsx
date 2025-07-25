@@ -660,25 +660,33 @@ export default function GeminiRecommend() {
             {!foodCheckLoading && foodWarning && (
               <div
                 style={{
-                  marginTop: 10,
+                  marginTop: 14,
                   fontWeight: 700,
                   animation: 'fade-in 0.5s',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: 8,
+                  background: '#e3f0fd',
+                  border: '2px solid #274472',
+                  borderRadius: 12,
+                  padding: '1rem 1.2rem',
+                  color: '#274472',
+                  maxWidth: 340,
+                  marginLeft: 'auto',
+                  marginRight: 'auto',
+                  flexDirection: 'column',
+                  textAlign: 'center',
                 }}
               >
-                <span
-                  style={{
-                    color:
-                      foodWarning.toLowerCase().includes('not safe') || foodWarning.toLowerCase().includes('avoid')
-                        ? '#b71c1c'
-                        : '#1a7e23',
-                    fontWeight: 700,
-                  }}
-                >
-                  {foodWarning}
+                <span style={{ fontSize: '1.08rem', fontWeight: 800 }}>
+                  {foodWarning.toLowerCase().includes('not safe') || foodWarning.toLowerCase().includes('avoid')
+                    ? 'Not recommended to eat'
+                    : 'Recommended to eat'}
+                </span>
+                <span style={{ fontSize: '0.98rem', fontWeight: 500, marginTop: 2, color: '#274472' }}>
+                  {/* Show only the first sentence or up to 100 chars as a short reason */}
+                  {foodWarning.split(/[.!?]/)[0].slice(0, 100)}
                 </span>
               </div>
             )}
@@ -749,4 +757,5 @@ function FoodItem({ food, icon, type }) {
     </li>
   );
 }
+
 
