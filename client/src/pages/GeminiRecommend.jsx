@@ -83,7 +83,7 @@ export default function GeminiRecommend() {
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('medimeal_user'));
     if (user && user.email) {
-      axios.get(`http://localhost:5000/api/user-input?email=${encodeURIComponent(user.email)}`)
+      axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/user-input?email=${encodeURIComponent(user.email)}`)
         .then(res => {
           if (res.data.input) setForm(f => ({ ...f, ...res.data.input }));
         });
